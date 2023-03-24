@@ -20,19 +20,17 @@ program cheerios
       type(sphere) :: sphere1
       type(sphere) :: sphere2
       call initialize_grid(grid,xL,yL,n)
-      sphere1%coordinates = (/2.0_K,2.0_K/)
-      sphere1%intcoord = xint(sphere1%coordinates,grid)
-      sphere1%height = 0.25_K
-      
-      sphere2%coordinates = (/2.5_K,2.5_K/)
-      sphere2%intcoord = xint(sphere2%coordinates,grid)
-      sphere2%height = 0.25_K
+      sphere1 = read_sphere('params/sphere1.param')
+      print *, allocated(sphere1%reference_frame)
+!      call initialize_sphere(sphere2,'params/sphere2.param')
 
+      !print *, sphere1%radius, sphere1%coordinates, sphere1%height, &
+      !      &sphere1%contact_angle, sphere1%resolution
       
       ! operations
-      call make_dip(sphere1,grid)
+      !call make_dip(sphere1,grid)
       !call make_dip(sphere2)
-      call save_grid(grid)
+      !call save_grid(grid)
       !call integrate_normals(sphere1)
 
       print *, 'Program end'

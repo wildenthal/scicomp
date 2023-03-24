@@ -7,27 +7,29 @@ module shapes
       real(K), parameter :: pi = 4*ATAN(1.0_K)
       integer, parameter :: file_unit=11
 
-      public sphere, make_dip
+      public sphere, make_dip, read_sphere
       
       type sphere
-            real(K)              :: radius = 1.0_K
-            real(K)              :: coordinates(2) = (/0.0_K,0.0_K/)
-            real(K)              :: height = 1.0_K
-            real(K)              :: contact_angle = pi/2
-            integer              :: intcoord(2) = (/0,0/)
+            real(K)              :: radius
+            real(K)              :: coordinates(2)
+            real(K)              :: height
+            real(K)              :: contact_angle
+            integer              :: intcoord(2)
             integer              :: resolution
-            real(K), allocatable :: reference_frame
+            real(K), allocatable :: reference_frame(:,:)
       end type
 
       contains
 
-      subroutine initialize_sphere(obj,file_name)
+      type(sphere) function read_sphere(file_name)
             type(sphere)       :: obj
             character(len=*)   :: file_name
             integer            :: line = 0
             integer            :: ios = 0
             integer            :: data_position
             character(len=100) :: buffer, label
+            real(K)            :: placeholder_real
+            integer            :: placeholder_int
 
             open(unit=file_unit,file=file_name)
             
@@ -41,7 +43,9 @@ module shapes
 
                         select case(label)
                         case('radius')
-                              read(buffer, *, iostat=ios) obj%radius
+                              print *, 'setting radius'
+                              read(buffer, *, iostat=ios) placeholder_real
+                              obj%radius = placeholder_real
                         case('x_coord')
                               read(buffer, *, iostat=ios) obj%coordinates(1)
                         case('y_coord')
@@ -50,11 +54,19 @@ module shapes
                               read(buffer, *, iostat=ios) obj%height
                         case('contact_angle')
                               read(buffer, *, iostat=ios) obj%contact_angle
-                        case('ref_frame_resolution')
+                        case('resolution')
                               read(buffer, *, iostat=ios) obj%resolution
+                        case default
+                              print *, "invalid label at line", line
                         end select
                   end if
             end do
+            
+            obj%contact_angle = obj%contact_angle*pi/180
+            allocate(obj%reference_frame(obj%resolution,obj%resolution))
+
+            read_sphere = obj
+            
       end
 
       subroutine make_dip(obj,grid)
