@@ -15,6 +15,7 @@ module grid_ops
             real(K), allocatable :: grid(:,:)
             real(K) :: lengthX, lengthY
             integer :: i,j, dots
+            n = dots
             allocate(grid(n,n))
             do j = 1, n
                   do i = 1, n
@@ -23,13 +24,14 @@ module grid_ops
             end do
             xL = lengthX
             yL = lengthY
-            n = dots
       end
 
       subroutine save_grid(grid)
             integer :: i,j
             real(K) :: axis_value(2)
-            real(K), dimension(n,n) :: grid
+
+            real(K), dimension(:,:) :: grid
+
             open(unit=file_number, file='grid.dat', status='replace')
             do j = 1, n
                   do i = 1, n
@@ -53,7 +55,6 @@ module grid_ops
                   write(file_number, *) axis_value(2)
             end do
             close(file_number)
-
       end
 
       function xpos(integer_position,grid)
