@@ -1,0 +1,6 @@
+myapp
+obj/*
+*.swp
+*.dat
+*.d
+*.mod

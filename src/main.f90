@@ -16,13 +16,16 @@ program cheerios
       ! grid variables
       real(K), allocatable :: grid(:,:)
 
+      ! object parameters
+      integer, parameter :: resolution = 100
+
       ! initializations
       type(sphere) :: sphere1
       type(sphere) :: sphere2
       call initialize_grid(grid,xL,yL,n)
       sphere1 = read_sphere('params/sphere1.param')
-      print *, allocated(sphere1%reference_frame)
-!      call initialize_sphere(sphere2,'params/sphere2.param')
+      call make_dip_sphere(sphere1)
+      call integrate_normals(sphere1)
 
       !print *, sphere1%radius, sphere1%coordinates, sphere1%height, &
       !      &sphere1%contact_angle, sphere1%resolution
