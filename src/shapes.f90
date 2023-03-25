@@ -5,7 +5,7 @@ module shapes
       integer, parameter :: K = kind(1d0)
       real(K), parameter :: pi = 4*ATAN(1.0_K)
       integer, parameter :: file_unit=11
-      integer, parameter :: n = 100
+      integer, parameter :: n = 200
 
       public sphere, make_dip_sphere, read_sphere, integrate_normals
       
@@ -65,15 +65,17 @@ module shapes
             integer, dimension(2) :: integer_position
             real(K), dimension(2) :: local_pos_sphere
 
-            local_pos_sphere(1) = obj%radius*integer_position(1)/(n)
-            local_pos_sphere(2) = obj%radius*integer_position(2)/(n)
+            local_pos_sphere(1) = obj%radius*integer_position(1)/(n/2)
+            local_pos_sphere(2) = obj%radius*integer_position(2)/(n/2)
       end
 
       subroutine make_dip_sphere(obj)
             type(sphere) :: obj
-            integer      :: i, j
+            integer      :: i, j, counter
             real(K)      :: h, pos(2)
+            
 
+            counter = 0
             if (obj%height < 0) then
                         stop "not implemented: &
                                          & center of mass below water level"
@@ -85,8 +87,12 @@ module shapes
                         h = obj%radius**2 - pos(1)**2 - pos(2)**2
                         h = min(0.0_K,obj%height-sqrt(h))
                         obj%reference_frame(i,j) = h
+                        if (h < 0.0_K) then
+                              counter = counter + 1
+                        end if
                   end do
             end do
+            print *, counter, 'dips'
       end
 
       subroutine integrate_normals(obj)
@@ -106,11 +112,7 @@ module shapes
             do j = -n/2,n/2 
                   do i = -n/2,n/2
                         pos = local_pos_sphere((/i,j/),obj)
-                        print *, pos
                         h = obj%radius**2 - pos(1)**2 - pos(2)**2
-                        if (h<0) then
-                              print *, 'illegal value'
-                        end if
                         h = obj%height-sqrt(h)
                         if (abs(obj%reference_frame(i,j)-h) < 1d-9) then
                               normal = normal + (/i,j/)
