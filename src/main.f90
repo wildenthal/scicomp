@@ -1,5 +1,5 @@
 program cheerios
-      use grid_ops 
+      use grid 
       use shapes
       implicit none
       
@@ -25,7 +25,9 @@ program cheerios
       call initialize_grid(grid,xL,yL,n)
       sphere1 = read_sphere('params/sphere1.param')
       call make_dip_sphere(sphere1)
+      call apply_force(sphere1,sphere2)
       call integrate_normals(sphere1)
+      print *, sphere1%acceleration
 
       !print *, sphere1%radius, sphere1%coordinates, sphere1%height, &
       !      &sphere1%contact_angle, sphere1%resolution
@@ -36,5 +38,5 @@ program cheerios
       !call save_grid(grid)
       !call integrate_normals(sphere1)
 
-      print *, 'Program end'
+      !print *, 'Program end'
 end program
