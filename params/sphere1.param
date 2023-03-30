@@ -3,4 +3,4 @@ x_coord       1.5
 y_coord       1.5
 height        1.0
 contact_angle 90
-resolution    100
+density       0.5

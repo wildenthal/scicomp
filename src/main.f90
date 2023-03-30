@@ -1,6 +1,7 @@
 program cheerios
       use grid 
       use shapes
+      use shape_forces
       implicit none
       
       !general parameters
@@ -23,8 +24,8 @@ program cheerios
       type(sphere) :: sphere1
       type(sphere) :: sphere2
       call initialize_grid(grid,xL,yL,n)
-      sphere1 = read_sphere('params/sphere1.param')
-      call make_dip_sphere(sphere1)
+      sphere1 = read_shape('params/sphere1.param')
+      call make_dip(sphere1)
       call apply_force(sphere1,sphere2)
       call integrate_normals(sphere1)
       print *, sphere1%acceleration

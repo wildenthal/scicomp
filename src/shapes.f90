@@ -7,14 +7,26 @@ module shapes
       integer, parameter :: file_unit=11
       integer, parameter :: n = 100
 
-      public sphere, make_dip_sphere, read_sphere, integrate_normals, &
-                                                                  apply_force
+      public sphere, make_dip, read_shape, apply_force, local_pos
+      
+      interface make_dip
+            module procedure make_dip_sphere
+      end interface
+
+      interface read_shape
+            module procedure read_sphere
+      end interface
+      
+      interface local_pos
+             module procedure local_pos_sphere
+      end interface
       
       type sphere
             real(K)              :: radius, height, contact_angle
             real(K)              :: coordinates(2), velocity(2), acceleration(2)
             integer              :: intcoord(2)
             real(K)              :: reference_frame(-n/2:n/2,-n/2:n/2)
+            real(K)              :: density
       end type
 
       contains
@@ -48,6 +60,8 @@ module shapes
                               read(buffer, *, iostat=ios) obj%height
                         case('contact_angle')
                               read(buffer, *, iostat=ios) obj%contact_angle
+                        case('density')
+                              read(buffer, *, iostat=ios) obj%density
                         case default
                               print *, "invalid label at line", line
                         end select
@@ -92,36 +106,6 @@ module shapes
                   end do
             end do
             !print *, counter, 'dips'
-      end
-
-      subroutine integrate_normals(obj)
-            type(sphere) :: obj
-            integer      :: i, j, normal(2), added, skipped 
-            real(K)      :: h, pos(2)
-
-            if (obj%height < 0) then
-                        stop "not implemented: &
-                                         & center of mass below water level"
-            end if
-            
-            normal = 0
-            skipped = 0
-            added = 0
-
-            do j = -n/2,n/2 
-                  do i = -n/2,n/2
-                        pos = local_pos_sphere((/i,j/),obj)
-                        h = obj%radius**2 - pos(1)**2 - pos(2)**2
-                        h = obj%height-sqrt(h)
-                        if (abs(obj%reference_frame(i,j)-h) < 1d-9) then
-                              normal = normal + (/i,j/)
-                              added = added + 1
-                        else
-                              skipped = skipped + 1
-                        end if
-                  end do
-            end do
-            obj%acceleration = -normal
       end
       
       subroutine apply_force(obj1,obj2)
