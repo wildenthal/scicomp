@@ -25,10 +25,11 @@ program cheerios
       type(sphere) :: sphere2
       call initialize_grid(grid,xL,yL,n)
       sphere1 = read_shape('params/sphere1.param')
-      call make_dip(sphere1)
-      call apply_force(sphere1,sphere2)
-      call integrate_normals(sphere1)
-      print *, sphere1%acceleration
+      call balance(sphere1)
+!      call make_dip(sphere1)
+!      call apply_force(sphere1,sphere2)
+!      call integrate_normals(sphere1)
+!      print *, sphere1%acceleration
 
       !print *, sphere1%radius, sphere1%coordinates, sphere1%height, &
       !      &sphere1%contact_angle, sphere1%resolution

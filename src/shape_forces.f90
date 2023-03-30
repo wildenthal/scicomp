@@ -52,6 +52,7 @@ module shape_forces
 
       subroutine balance_sphere(obj)
             type(sphere) :: obj
+            print *, submerged_volume(obj)
       end
 
 end

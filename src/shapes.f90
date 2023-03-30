@@ -8,6 +8,7 @@ module shapes
       integer, parameter :: n = 100
 
       public sphere, make_dip, read_shape, apply_force, local_pos
+      public submerged_volume
       
       interface make_dip
             module procedure make_dip_sphere
@@ -19,6 +20,10 @@ module shapes
       
       interface local_pos
              module procedure local_pos_sphere
+      end interface
+
+      interface submerged_volume
+            module procedure submerged_volume_sphere
       end interface
       
       type sphere
@@ -106,6 +111,28 @@ module shapes
                   end do
             end do
             !print *, counter, 'dips'
+      end 
+
+      real(K) function submerged_volume_sphere(obj)
+            type(sphere) :: obj
+            real(K)      :: svs, h
+            
+            if (obj%height>obj%radius) then
+                  stop "Sphere ejected from water"
+            else if (obj%height<-obj%radius) then
+                  stop "Sphere sunk below water"
+            end if
+
+            if (obj%height>0) then
+                  h = obj%radius-obj%height
+                  svs = pi*h**2*(obj%radius-h/3)
+            else
+                  svs = 4*pi*obj%radius**3/3 
+                  h = obj%radius+obj%height
+                  svs = svs - pi*h**2*(obj%radius - h/3)
+            end if
+
+            submerged_volume_sphere = svs
       end
       
       subroutine apply_force(obj1,obj2)
