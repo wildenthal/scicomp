@@ -5,7 +5,7 @@
 # Compiler settings - Can be customized.
 CC = gfortran
 CPP = gfortran -cpp
-CXXFLAGS = -g #-Wall
+CXXFLAGS = -g -Wall
 LDFLAGS = 
 
 # Makefile settings - Can be customized.

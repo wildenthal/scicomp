@@ -1,7 +1,7 @@
 program cheerios
       use grid 
       use shapes
-      use shape_forces
+      use forces
       implicit none
       
       !general parameters
@@ -21,8 +21,8 @@ program cheerios
       integer, parameter :: resolution = 100
 
       ! initializations
-      type(sphere) :: sphere1
-      type(sphere) :: sphere2
+      type(sphere), save :: sphere1
+      type(sphere), save :: sphere2
       call initialize_grid(grid,xL,yL,n)
       sphere1 = read_shape('params/sphere1.param')
       call balance(sphere1)

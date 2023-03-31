@@ -1,10 +1,12 @@
-module shape_forces
+module forces
       use shapes
       implicit none
       private
       
       integer, parameter :: K = kind(1d0)
       real(K), parameter :: pi = 4*ATAN(1.0_K)
+      real(K), parameter :: g = 9.8_K
+      real(K), parameter :: rho = 1000_K
 
       public balance, integrate_normals
       
@@ -52,7 +54,26 @@ module shape_forces
 
       subroutine balance_sphere(obj)
             type(sphere) :: obj
-            print *, submerged_volume(obj)
+            real(K)      :: weight, bouyancy, force, eps
+            integer      :: counter
+            counter = 0
+            weight = obj%mass*g
+            do
+            bouyancy = submerged_volume(obj)*rho*g
+            force = bouyancy - weight
+            
+            eps = abs(force)/weight
+
+            if (eps < 1e-7) exit
+            if (force > 0) then
+                  obj%height = obj%height + obj%radius*eps
+            else
+                  obj%height = obj%height - obj%radius*eps
+            end if
+            counter = counter + 1
+            end do
+            print *, obj%height
+            print *, counter
       end
 
 end
