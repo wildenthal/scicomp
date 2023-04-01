@@ -3,10 +3,11 @@ module forces
       implicit none
       private
       
-      integer, parameter :: K = kind(1d0)
-      real(K), parameter :: pi = 4*ATAN(1.0_K)
-      real(K), parameter :: g = 9.8_K
-      real(K), parameter :: rho = 1000_K
+      integer, parameter :: K   = kind(1d0)
+      real(K), parameter :: pi  = 4*ATAN(1.0_K)
+      real(K), parameter :: g   = 9.8_K          ! gravity
+      real(K), parameter :: rho = 1000_K         ! density of water
+      real(K), parameter :: gam = 72.8e-3        ! air-water surface tension
 
       public balance, integrate_normals
       
@@ -74,6 +75,30 @@ module forces
             end do
             print *, obj%height
             print *, counter
+            call water_height_sphere(obj)
+            print *, obj%water_height
+      end
+      
+      subroutine water_height_sphere(obj)
+            type(sphere) :: obj
+            real(K)      :: z, a
+            integer      :: i
+            
+            z = obj%water_height
+            a = sqrt(rho*g/gam)
+            
+            print *, obj%contact_angle
+            print *, z/obj%radius
+            print *, asin(z/obj%radius)
+            print *, tan(obj%contact_angle)
+            print *, a
+
+            do i = 1, 100
+                  z = a*tan(obj%contact_angle - asin(z/obj%radius))
+                  print *, z
+            end do
+
+            obj%water_height = z
       end
 
 end

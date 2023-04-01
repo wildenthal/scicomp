@@ -2,5 +2,5 @@ radius        1e-3
 x_coord       1.5
 y_coord       1.5
 height        0.0
-contact_angle 90
+contact_angle 45
 density       700
