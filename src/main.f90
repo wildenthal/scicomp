@@ -39,7 +39,7 @@ program cheerios
             call integrate_normals(sphere1)
             call integrate_time(sphere1,step,time_step,history)
       end do
-      print *, history
+!      print *, history
 
       contains
 

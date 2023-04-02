@@ -21,19 +21,24 @@ module forces
 
       contains
 
-      subroutine integrate_time(obj,time_step,time_delta,history)
+      subroutine integrate_time(obj,step,time_step, history)
             type(sphere) :: obj
-            integer      :: time_step
-            real(K)      :: time_delta, history(:,:)
-
-            obj%coordinates = 2*obj%coordinates-history(time_step-2,:) + &
-                                                obj%acceleration*time_delta**2
-            history(time_step,:) = obj%coordinates
+            integer      :: step
+            real(K)      :: time_step, history(:,:)
+            print *, "step", step
+            print *,"curr", obj%coordinates
+            print *, "prev", history(:,step-2)
+            print *, "acc", obj%acceleration
+            obj%coordinates = 2*obj%coordinates-history(:,step-2) + &
+                                                obj%acceleration*time_step**2
+            print *, "new", obj%coordinates
+            read (*,*)
+            history(:,step) = obj%coordinates
       end
 
       subroutine integrate_normals_sphere(obj)
             type(sphere) :: obj
-            integer      :: i, j, n, added, skipped 
+            integer      :: i, j, n
             real(K)      :: h, norm, water, pos(2), normal(3)
 
            n = size(obj%reference_frame,1)
@@ -44,8 +49,6 @@ module forces
             end if
             
             normal = 0
-            skipped = 0
-            added = 0
 
             do j = -n/2,n/2 
                   do i = -n/2,n/2
@@ -57,8 +60,6 @@ module forces
                               normal(1) = normal(1) - pos(1)
                               normal(2) = normal(2) - pos(2)
                               normal(3) = normal(3) - water
-                        else
-                              skipped = skipped + 1
                         end if
                   end do
             end do
@@ -90,7 +91,7 @@ module forces
       subroutine tilt_water(obj)
             type(sphere) :: obj
             integer      :: i, j, n
-            real(K)      :: slope, pos(2)
+            real(K)      :: slope
             n = size(obj%reference_frame,1)
             do j = -n/2, n/2
                   do i = -n/2, n/2
