@@ -21,6 +21,16 @@ module forces
 
       contains
 
+      subroutine integrate_time(obj,time_step,time_delta,history)
+            type(sphere) :: obj
+            integer      :: time_step
+            real(K)      :: time_delta, history(:,:)
+
+            obj%coordinates = 2*obj%coordinates-history(time_step-2,:) + &
+                                                obj%acceleration*time_delta**2
+            history(time_step,:) = obj%coordinates
+      end
+
       subroutine integrate_normals_sphere(obj)
             type(sphere) :: obj
             integer      :: i, j, n, added, skipped 
@@ -63,46 +73,28 @@ module forces
             integer      :: counter
             counter = 0
             weight = obj%mass*g
-            do
-            bouyancy = submerged_volume(obj)*rho*g
-            force = bouyancy - weight
-            
-            eps = abs(force)/weight
 
-            if (eps < 1e-7) exit
-            if (force > 0) then
-                  obj%height = obj%height + obj%radius*eps
-            else
-                  obj%height = obj%height - obj%radius*eps
-            end if
-            counter = counter + 1
+            do
+                  bouyancy = submerged_volume(obj)*rho*g
+                  force = bouyancy - weight
+            
+                  eps = abs(force)/weight
+
+                  if (eps < 1e-7) exit
+                  if (force > 0) then
+                        obj%height = obj%height + obj%radius*eps
+                  else
+                        obj%height = obj%height - obj%radius*eps
+                  end if
+                  counter = counter + 1
             end do
-            print *, obj%height
-            print *, counter
+
             call water_height_sphere(obj)
-            print *, obj%water_height
       end
       
       subroutine water_height_sphere(obj)
             type(sphere) :: obj
-            real(K)      :: z, a
-            integer      :: i
             
-            z = obj%water_height
-            a = sqrt(rho*g/gam)
-            
-            print *, obj%contact_angle
-            print *, z/obj%radius
-            print *, asin(z/obj%radius)
-            print *, tan(obj%contact_angle)
-            print *, a
-
-            do i = 1, 100
-                  z = a*tan(obj%contact_angle - asin(z/obj%radius))
-                  print *, z
-            end do
-
-            obj%water_height = z
       end
 
 end

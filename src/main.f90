@@ -22,7 +22,7 @@ program cheerios
 
       ! initializations
       type(sphere), save :: sphere1
-      type(sphere), save :: sphere2
+!      type(sphere), save :: sphere2
       call initialize_grid(grid,xL,yL,n)
       sphere1 = read_shape('params/sphere1.param')
 !      call balance(sphere1)
