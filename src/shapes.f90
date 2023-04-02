@@ -7,7 +7,7 @@ module shapes
       integer, parameter :: file_unit=11
       integer, parameter :: n = 100
 
-      public sphere, make_dip, read_shape, apply_force, local_pos
+      public sphere, make_dip, read_shape, local_pos
       public submerged_volume
       
       interface make_dip
@@ -93,11 +93,10 @@ module shapes
 
       subroutine make_dip_sphere(obj)
             type(sphere) :: obj
-            integer      :: i, j, counter
+            integer      :: i, j
             real(K)      :: h, pos(2)
             
 
-            counter = 0
             if (obj%height < 0) then
                         stop "not implemented: &
                                          & center of mass below water level"
@@ -107,11 +106,8 @@ module shapes
                   do i = -n/2,n/2
                         pos = local_pos_sphere((/i,j/),obj)
                         h = obj%radius**2 - pos(1)**2 - pos(2)**2
-                        h = min(0.0_K,obj%height-sqrt(h))
+                        h = min(obj%reference_frame(i,j),obj%height-sqrt(h))
                         obj%reference_frame(i,j) = h
-                        if (h < 0.0_K) then
-                              counter = counter + 1
-                        end if
                   end do
             end do
       end 
@@ -136,24 +132,5 @@ module shapes
             end if
 
             submerged_volume_sphere = svs
-      end
-
-      subroutine apply_force(obj1,obj2)
-            type(sphere) :: obj1, obj2
-            real(K)      :: displacement(2), pos(2)
-            integer      :: i,j
-
-            displacement = obj1%coordinates-obj2%coordinates
-            do j = -n/2,n/2
-                  do i = -n/2,n/2
-                        pos = local_pos_sphere((/i,j/),obj1)
-                        if (abs(pos(1)**2+pos(2)**2-&
-                                          0.25*obj1%radius**2)<1e-6) then
-                              displacement = displacement + pos
-                              obj1%reference_frame(i,j) = &
-                                             obj1%reference_frame(i,j)
-                        end if
-                  end do
-            end do
       end
 end

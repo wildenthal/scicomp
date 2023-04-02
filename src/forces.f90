@@ -9,7 +9,7 @@ module forces
       real(K), parameter :: rho = 1000_K         ! density of water
       real(K), parameter :: gam = 72.8e-3        ! air-water surface tension
 
-      public balance, integrate_normals, integrate_time
+      public balance, integrate_normals, integrate_time, tilt_water
       
       interface balance
             module procedure balance_sphere
@@ -54,8 +54,8 @@ module forces
                         h = obj%height-sqrt(h)
                         water = obj%reference_frame(i,j)
                         if (abs(water-h) < 1d-9) then
-                              normal(1) = normal(1) + pos(1)
-                              normal(2) = normal(2) + pos(2)
+                              normal(1) = normal(1) - pos(1)
+                              normal(2) = normal(2) - pos(2)
                               normal(3) = normal(3) - water
                         else
                               skipped = skipped + 1
@@ -70,8 +70,6 @@ module forces
       subroutine balance_sphere(obj)
             type(sphere) :: obj
             real(K)      :: weight, bouyancy, force, eps
-            integer      :: counter
-            counter = 0
             weight = obj%mass*g
 
             do
@@ -86,7 +84,19 @@ module forces
                   else
                         obj%height = obj%height - obj%radius*eps
                   end if
-                  counter = counter + 1
+            end do
+      end
+
+      subroutine tilt_water(obj)
+            type(sphere) :: obj
+            integer      :: i, j, n
+            real(K)      :: slope, pos(2)
+            n = size(obj%reference_frame,1)
+            do j = -n/2, n/2
+                  do i = -n/2, n/2
+                        slope = real(i)/n*obj%radius
+                        obj%reference_frame(i,j) = obj%reference_frame(i,j)+slope
+                  end do
             end do
       end
 end
