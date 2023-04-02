@@ -64,6 +64,7 @@ module forces
             end do
             norm = sqrt(normal(1)**2+normal(2)**2+normal(3)**2)
             normal = normal/norm
+            obj%acceleration = -normal(1:2)*normal(3)*obj%mass*g
       end
 
       subroutine balance_sphere(obj)
