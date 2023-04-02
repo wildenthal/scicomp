@@ -9,7 +9,7 @@ module forces
       real(K), parameter :: rho = 1000_K         ! density of water
       real(K), parameter :: gam = 72.8e-3        ! air-water surface tension
 
-      public balance, integrate_normals
+      public balance, integrate_normals, integrate_time
       
       interface balance
             module procedure balance_sphere
@@ -64,7 +64,6 @@ module forces
             end do
             norm = sqrt(normal(1)**2+normal(2)**2+normal(3)**2)
             normal = normal/norm
-            print *, normal
       end
 
       subroutine balance_sphere(obj)
@@ -88,13 +87,5 @@ module forces
                   end if
                   counter = counter + 1
             end do
-
-            call water_height_sphere(obj)
       end
-      
-      subroutine water_height_sphere(obj)
-            type(sphere) :: obj
-            
-      end
-
 end

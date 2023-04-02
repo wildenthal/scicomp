@@ -27,8 +27,8 @@ module shapes
       end interface
       
       type sphere
-            real(K)              :: radius, height, contact_angle, water_height
-            real(K)              :: coordinates(2), velocity(2), acceleration(2)
+            real(K)              :: radius, height, contact_angle
+            real(K)              :: coordinates(2), acceleration(2)
             integer              :: intcoord(2)
             real(K)              :: reference_frame(-n/2:n/2,-n/2:n/2)
             real(K)              :: volume, mass, density
@@ -78,8 +78,6 @@ module shapes
             obj%volume = 4*pi*obj%radius**3/3
 
             obj%mass = obj%volume*obj%density
-
-            obj%water_height = 0.0_K
 
             read_sphere = obj
       end
@@ -140,12 +138,6 @@ module shapes
             submerged_volume_sphere = svs
       end
 
-      real(K) function slope_sphere(obj)
-            type(sphere) :: obj
-            slope_sphere = tan(obj%contact_angle-pi-&
-                                          asin(obj%water_height/obj%radius))
-      end
-      
       subroutine apply_force(obj1,obj2)
             type(sphere) :: obj1, obj2
             real(K)      :: displacement(2), pos(2)
@@ -158,25 +150,10 @@ module shapes
                         if (abs(pos(1)**2+pos(2)**2-&
                                           0.25*obj1%radius**2)<1e-6) then
                               displacement = displacement + pos
-                              !print *, pos
-                              !print *, obj1%reference_frame(i,j)
                               obj1%reference_frame(i,j) = &
-                                             obj1%reference_frame(i,j) !- &
-!                                             &capillary_dip(pos,obj2)
-                              !print *, obj1%reference_frame(i,j)
-                              !print *
+                                             obj1%reference_frame(i,j)
                         end if
                   end do
             end do
       end
-
-!     real(K) function capillary_dip(pos,obj)
-!           real(K), dimension(2) :: pos
-!           type(sphere) :: obj
-!           capillary_dip =0.0_K
-!           if (pos(1) > 0.0_K) then
-!                 capillary_dip = 0.1_K
-!           end if
-!     end
-
 end

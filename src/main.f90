@@ -8,6 +8,9 @@ program cheerios
       integer, parameter :: K = kind(0.d0)
       integer, parameter :: file_number = 11
       real(K), parameter :: pi = 4*ATAN(1.0_K)
+      integer, parameter :: max_steps = 100
+      real(K)            :: history(2,max_steps)
+      integer            :: time_step
 
       ! grid parameters
       integer, parameter :: n = 200
@@ -22,23 +25,15 @@ program cheerios
 
       ! initializations
       type(sphere), save :: sphere1
-!      type(sphere), save :: sphere2
       call initialize_grid(grid,xL,yL,n)
       sphere1 = read_shape('params/sphere1.param')
-!      call balance(sphere1)
+      history(:,1) = sphere1%coordinates
+      history(:,2) = sphere1%coordinates
       call make_dip(sphere1)
-!      call apply_force(sphere1,sphere2)
-      call integrate_normals(sphere1)
-!      print *, sphere1%acceleration
-
-      !print *, sphere1%radius, sphere1%coordinates, sphere1%height, &
-      !      &sphere1%contact_angle, sphere1%resolution
       
-      ! operations
-      !call make_dip(sphere1,grid)
-      !call make_dip(sphere2)
-      !call save_grid(grid)
-      !call integrate_normals(sphere1)
-
-      !print *, 'Program end'
+      ! evolve system
+      do time_step = 3,max_steps
+            call integrate_normals(sphere1)
+            call integrate_time(sphere1,time_step,0.01_K,history)
+      end do
 end program
