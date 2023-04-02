@@ -25,14 +25,8 @@ module forces
             type(sphere) :: obj
             integer      :: step
             real(K)      :: time_step, history(:,:)
-            print *, "step", step
-            print *,"curr", obj%coordinates
-            print *, "prev", history(:,step-2)
-            print *, "acc", obj%acceleration
             obj%coordinates = 2*obj%coordinates-history(:,step-2) + &
                                                 obj%acceleration*time_step**2
-            print *, "new", obj%coordinates
-            read (*,*)
             history(:,step) = obj%coordinates
       end
 

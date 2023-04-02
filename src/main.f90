@@ -39,7 +39,7 @@ program cheerios
             call integrate_normals(sphere1)
             call integrate_time(sphere1,step,time_step,history)
       end do
-!      print *, history
+      call save_results()
 
       contains
 
@@ -77,6 +77,17 @@ program cheerios
                         end select
                   end if
             end do
+            
+            close(11)
+      end
+      
+      subroutine save_results()
+            integer :: i
+            open(unit=12, file="trajectory.dat", status='replace')
+                  do i = 1, max_steps
+                        write(12, *) history(:,i)
+                  enddo
+            close(12)
       end
 
 end program

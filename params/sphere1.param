@@ -1,4 +1,4 @@
-radius        1e-3 
+radius        0.5 
 x_coord       1.5
 y_coord       1.5
 height        0.0
