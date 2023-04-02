@@ -23,8 +23,8 @@ module forces
 
       subroutine integrate_normals_sphere(obj)
             type(sphere) :: obj
-            integer      :: i, j, n, normal(2), added, skipped 
-            real(K)      :: h, pos(2)
+            integer      :: i, j, n, added, skipped 
+            real(K)      :: h, norm, water, pos(2), normal(3)
 
            n = size(obj%reference_frame,1)
 
@@ -42,15 +42,19 @@ module forces
                         pos = local_pos((/i,j/),obj)
                         h = obj%radius**2 - pos(1)**2 - pos(2)**2
                         h = obj%height-sqrt(h)
-                        if (abs(obj%reference_frame(i,j)-h) < 1d-9) then
-                              normal = normal + (/i,j/)
-                              added = added + 1
+                        water = obj%reference_frame(i,j)
+                        if (abs(water-h) < 1d-9) then
+                              normal(1) = normal(1) + pos(1)
+                              normal(2) = normal(2) + pos(2)
+                              normal(3) = normal(3) - water
                         else
                               skipped = skipped + 1
                         end if
                   end do
             end do
-            obj%acceleration = -normal
+            norm = sqrt(normal(1)**2+normal(2)**2+normal(3)**2)
+            normal = normal/norm
+            print *, normal
       end
 
       subroutine balance_sphere(obj)

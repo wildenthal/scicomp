@@ -25,10 +25,10 @@ program cheerios
       type(sphere), save :: sphere2
       call initialize_grid(grid,xL,yL,n)
       sphere1 = read_shape('params/sphere1.param')
-      call balance(sphere1)
-!      call make_dip(sphere1)
+!      call balance(sphere1)
+      call make_dip(sphere1)
 !      call apply_force(sphere1,sphere2)
-!      call integrate_normals(sphere1)
+      call integrate_normals(sphere1)
 !      print *, sphere1%acceleration
 
       !print *, sphere1%radius, sphere1%coordinates, sphere1%height, &
