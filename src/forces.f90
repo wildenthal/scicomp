@@ -1,8 +1,10 @@
+! Author: Gaston Barboza
 module forces
       use shapes
       implicit none
       private
       
+      ! general parameters
       integer, parameter :: K   = kind(1d0)
       real(K), parameter :: pi  = 4*ATAN(1.0_K)
       real(K), parameter :: g   = 9.8_K          ! gravity
@@ -11,6 +13,8 @@ module forces
 
       public balance, integrate_normals, integrate_time, tilt_water
       
+      ! interfaces allow extension to different shape types
+
       interface balance
             module procedure balance_sphere
       end interface
@@ -22,6 +26,7 @@ module forces
       contains
 
       subroutine integrate_time(obj,step,time_step, history)
+            ! simple verlet integrator for positions of the sphere
             type(sphere) :: obj
             integer      :: step
             real(K)      :: time_step, history(:,:)
@@ -31,6 +36,12 @@ module forces
       end
 
       subroutine integrate_normals_sphere(obj)
+            ! adds up all the normal vectors of the sphere in contact with
+            !   the water and normalizes it to find the normal vector of the
+            !   contact surface between the water and the sphere
+            ! projects the buoyancy force onto the plane tangent to the
+            !   water surface to find the sphere's acceleration subject
+            !   to the constraint of staying on the surface of the liquid
             type(sphere) :: obj
             integer      :: i, j, n
             real(K)      :: h, norm, water, pos(2), normal(3)
@@ -63,6 +74,9 @@ module forces
       end
 
       subroutine balance_sphere(obj)
+            ! uses the archimedes principle to find the equilibrium
+            !    position of a sphere submerged in water
+
             type(sphere) :: obj
             real(K)      :: weight, bouyancy, force, eps
             weight = obj%mass*g
@@ -83,6 +97,7 @@ module forces
       end
 
       subroutine tilt_water(obj)
+            ! tilts the surface of the water to simulate a capillary effect
             type(sphere) :: obj
             integer      :: i, j, n
             real(K)      :: slope
@@ -90,7 +105,7 @@ module forces
             do j = -n/2, n/2
                   do i = -n/2, n/2
                         slope = real(i)/n*obj%radius
-                        obj%reference_frame(i,j) = obj%reference_frame(i,j)+slope
+                        obj%reference_frame(i,j) =obj%reference_frame(i,j)+slope
                   end do
             end do
       end

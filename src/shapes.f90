@@ -1,15 +1,19 @@
+! Author: Gaston Barboza
 module shapes
       implicit none
       private
       
+      ! general parameters
       integer, parameter :: K = kind(1d0)
       real(K), parameter :: pi = 4*ATAN(1.0_K)
       integer, parameter :: file_unit=11
-      integer, parameter :: n = 100
+      integer, parameter :: n = 100 ! local grid resolution
 
       public sphere, make_dip, read_shape, local_pos
       public submerged_volume
       
+      ! global interfaces: allows extending procedures to different
+      !   shape types
       interface make_dip
             module procedure make_dip_sphere
       end interface
@@ -26,8 +30,9 @@ module shapes
             module procedure submerged_volume_sphere
       end interface
       
+      ! shapes go here
       type sphere
-            real(K)              :: radius, height, contact_angle
+            real(K)              :: radius, height, contact_angle 
             real(K)              :: coordinates(2), acceleration(2)
             integer              :: intcoord(2)
             real(K)              :: reference_frame(-n/2:n/2,-n/2:n/2)
@@ -37,6 +42,9 @@ module shapes
       contains
 
       type(sphere) function read_sphere(file_name)
+            ! loads all shape characteristics from a file
+            ! taken from jblevins.org/log/control-file
+
             type(sphere)       :: obj
             character(len=*)   :: file_name
             integer            :: line = 0
@@ -83,6 +91,9 @@ module shapes
       end
 
       function local_pos_sphere(integer_position,obj)
+            ! local reference frame is indexed by integers,
+            !   this converts them to coordinate positions
+
             type(sphere)          :: obj
             integer, dimension(2) :: integer_position
             real(K), dimension(2) :: local_pos_sphere
@@ -92,6 +103,8 @@ module shapes
       end
 
       subroutine make_dip_sphere(obj)
+            ! makes a dip in the water where the sphere is floating
+
             type(sphere) :: obj
             integer      :: i, j
             real(K)      :: h, pos(2)
@@ -113,6 +126,10 @@ module shapes
       end 
 
       real(K) function submerged_volume_sphere(obj)
+            ! calculates the volume of the submerged part of the sphere
+            !   using the formula for the volume of a spherical cap
+            !   of height h: vol = pi*h**2*(radius-h/3)
+
             type(sphere) :: obj
             real(K)      :: svs, h
             

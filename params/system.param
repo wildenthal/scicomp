@@ -1,6 +1,5 @@
 x_length    10
 y_length    10
 grid_res    100
-local_res   100
 max_steps   100
 time_step   1e-3

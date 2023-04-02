@@ -1,3 +1,4 @@
+! Author: Gaston Barboza
 program cheerios
       use grid 
       use shapes
@@ -20,9 +21,6 @@ program cheerios
       ! grid variables
       real(K), allocatable :: grid(:,:)
 
-      ! object parameters
-      integer              :: resolution
-
       ! initializations
       type(sphere)         :: sphere1
       call read_params()
@@ -33,6 +31,7 @@ program cheerios
       history(:,2) = sphere1%coordinates
       
       ! evolve system
+      call balance(sphere1)
       call tilt_water(sphere1)
       call make_dip(sphere1)
       do step = 3,max_steps
@@ -70,8 +69,6 @@ program cheerios
                               read(buffer, *, iostat=ios) max_steps
                         case('time_step')
                               read(buffer, *, iostat=ios) time_step
-                        case('local_res')
-                              read(buffer, *, iostat=ios) resolution
                         case default
                               print *, "invalid label at line", line
                         end select
